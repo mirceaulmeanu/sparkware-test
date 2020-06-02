@@ -47,13 +47,14 @@ interface ISearchInputProps {
 
 export class SearchInput extends React.Component<ISearchInputProps> {
     render() {
+        let { loadInProgress, error, ...inputProps } = this.props;
         return <>
             <Search>
                 <Icon><img src={ searchiconsvg } alt="" /></Icon>
-                <Input type="text" {...this.props} />
-                { this.props.loadInProgress ? <Loading><img src={ loadinggif } alt="" style={{width: 18}} /></Loading> : null }
+                <Input type="text" {...inputProps} />
+                { loadInProgress ? <Loading><img src={ loadinggif } alt="" style={{width: 18}} /></Loading> : null }
             </Search>
-            <div style={{textAlign: "center", fontWeight: 900}}>{ this.props.error }</div>
+            <div style={{textAlign: "center", fontWeight: 700}}>{ error }</div>
         </>;
     }
 }

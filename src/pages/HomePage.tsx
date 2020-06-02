@@ -54,6 +54,8 @@ export class HomePage extends React.Component<IHomePageProps> {
             clearTimeout(this.searchTimeout);
         }
         this.searchTimeout = setTimeout(async () => {
+            // NOTA BENE: Part of this code is repeated below, for infinite scrolling. Maybe it would be better
+            // to extract it in a separate class that would manage the state and the store
             this.props.flickrPhotosState.reset();
             this.props.flickrPhotosState.loadInProgress = true;
             try {

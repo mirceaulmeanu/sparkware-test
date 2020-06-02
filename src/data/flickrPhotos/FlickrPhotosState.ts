@@ -29,6 +29,9 @@ export class FlickrPhotosState {
         this._photos = append ? [...this._photos, ...res.photo] : res.photo;
         this._pagesLoaded = res.page;
         this._totalPages = res.pages;
+        if (this._photos.length === 0) {
+            this._errorMessage = "Couldn't find any photo";
+        }
     }
 
     set searchText(val: string) {

@@ -3,7 +3,7 @@ import { IFlickrPhoto } from "./IFlickrPhoto";
 export interface IFlickrResponse {
     page: number;
     pages: number;
-    perpage: number;
+    perPage: number;
     photo: IFlickrPhoto[];
     total: string;
 }

@@ -1,5 +1,6 @@
 import { FlickrPhotosStore } from "./FlickrPhotosStore";
 import { FlickrPhotosApi } from "./FlickrPhotosApi";
+import { FlickrResponseReader } from "./FlickrResponseReader";
 import { AppConfig } from "src/AppConfig";
 import { HttpApi } from "src/data/HttpApi";
 
@@ -10,7 +11,8 @@ export class FlickrPhotosStoreFactory {
             new FlickrPhotosApi(
                 this.appConfig.getFlickrUrl(),
                 this.httpApi
-            )
+            ),
+            new FlickrResponseReader()
         );
     }
 }

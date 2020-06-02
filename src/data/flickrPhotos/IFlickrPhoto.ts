@@ -1,9 +1,9 @@
 export interface IFlickrPhoto {
     farm: number;
     id: string;
-    isfamily: number;
-    isfriend: number;
-    ispublic: number;
+    isFamily: number;
+    isFriend: number;
+    isPublic: number;
     owner: string;
     secret: string;
     server: string;

@@ -10,7 +10,7 @@ class AppRootServices {
             // NOTA BENE: Normally the config would be loaded from a configuration file, some json that we need to request or maybe an .env file.
             // But for simplicity i'm just putting the value here
             appConfigData = {
-                FLICKR_URL: "https://api.flickr.com/services/rest/?method=flickr.photos.search&safe_search=1&format=json&nojsoncallback=1&api_key=15b67c2a8b4288ff1fddf5eb56655cfb&content_type=1&is_getty=1&text=%s"
+                FLICKR_URL: "https://api.flickr.com/services/rest/?method=flickr.photos.search&safe_search=1&format=json&nojsoncallback=1&api_key=15b67c2a8b4288ff1fddf5eb56655cfb&content_type=1&is_getty=1&text=%s&page=%d"
             };
         } catch (e) {
             // No logging support yet

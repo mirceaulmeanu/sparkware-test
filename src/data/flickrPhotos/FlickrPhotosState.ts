@@ -1,5 +1,7 @@
 import { observable } from "mobx";
 import { IFlickrPhoto } from "./IFlickrPhoto";
+import { IFlickrResponse } from "./IFlickrResponse";
+
 
 export class FlickrPhotosState {
     @observable
@@ -10,6 +12,24 @@ export class FlickrPhotosState {
     private _photos: IFlickrPhoto[] = [];
     @observable
     private _errorMessage = "";
+    @observable
+    private _pagesLoaded = 0;
+    @observable
+    private _totalPages = 0;
+
+    reset() {
+        this._loadInProgress = false;
+        this._pagesLoaded = 0;
+        this._errorMessage = "";
+    }
+
+    update(res: IFlickrResponse, append?: boolean) {
+        this._loadInProgress = false;
+        this._errorMessage = "";
+        this._photos = append ? [...this._photos, ...res.photo] : res.photo;
+        this._pagesLoaded = res.page;
+        this._totalPages = res.pages;
+    }
 
     set searchText(val: string) {
         this._searchText = val;
@@ -37,5 +57,19 @@ export class FlickrPhotosState {
     }
     get errorMessage() {
         return this._errorMessage;
+    }
+
+    set pagesLoaded(noOfPages: number) {
+        this._pagesLoaded = noOfPages;
+    }
+    get pagesLoaded() {
+        return this._pagesLoaded;
+    }
+
+    set totalPages(noOfPages: number) {
+        this._totalPages = noOfPages;
+    }
+    get totalPages() {
+        return this._totalPages;
     }
 }

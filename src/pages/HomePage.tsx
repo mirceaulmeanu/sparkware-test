@@ -1,9 +1,12 @@
 import React from "react";
 import { observer } from "mobx-react";
-
 import { FlickrPhotosStore } from "src/data/flickrPhotos/FlickrPhotosStore";
 import { FlickrPhotosState } from "src/data/flickrPhotos/FlickrPhotosState";
 import { SearchTermTooShortError } from "src/data/flickrPhotos/errors/SearchTermTooShortError";
+import { SearchInputWrapper } from "src/components/homepage/SearchInputWrapper";
+import { SearchInput } from "src/components/homepage/SearchInput";
+import { Card } from "src/components/homepage/Card";
+import loadinggif from "src/icons/loading.gif";
 
 interface IHomePageProps {
     flickrPhotosStore: FlickrPhotosStore;
@@ -24,21 +27,24 @@ export class HomePage extends React.Component<IHomePageProps> {
 
     render() {
         return <div>
-            <div><input
-                type="text"
-                onChange={(ev) => { this.onSearchTermChange(ev.currentTarget.value) }}
-                value={this.props.flickrPhotosState.searchText}
-            /></div>
+            <SearchInputWrapper>
+                <SearchInput
+                    onChange={(ev) => { this.onSearchTermChange(ev.currentTarget.value) }}
+                    value={this.props.flickrPhotosState.searchText}
+                    loadInProgress={this.props.flickrPhotosState.loadInProgress}
+                    error={this.props.flickrPhotosState.errorMessage}
+                />
+            </SearchInputWrapper>
             <div>
-                <div>Results</div>
-                <div>{ this.props.flickrPhotosState.searchText }</div>
-                <div>{ this.props.flickrPhotosState.loadInProgress ? "Loading ..." : "" }</div>
-                <div style={{display: "flex", flexWrap: "wrap"}}>
-                    { this.props.flickrPhotosState.photos.map(photo => <div key={photo.id} style={{width: 100, height: 100, margin: 20}}>
+                <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
+                    { this.props.flickrPhotosState.photos.map(photo => <Card key={photo.id}>
                         <img src={`https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_t.jpg`} alt={photo.title} />
-                    </div>) }
+                    </Card>) }
                 </div>
             </div>
+            { this.props.flickrPhotosState.loadInProgress ? <div style={{textAlign: "center"}}>
+                <img src={ loadinggif } alt="" style={{width: 36}} />
+            </div> : null }
         </div>;
     }
 
@@ -48,12 +54,11 @@ export class HomePage extends React.Component<IHomePageProps> {
             clearTimeout(this.searchTimeout);
         }
         this.searchTimeout = setTimeout(async () => {
+            this.props.flickrPhotosState.reset();
+            this.props.flickrPhotosState.loadInProgress = true;
             try {
-                this.props.flickrPhotosState.errorMessage = "";
-                this.props.flickrPhotosState.loadInProgress = true;
-                let photos = await this.props.flickrPhotosStore.fetch(this.props.flickrPhotosState.searchText);
-                this.props.flickrPhotosState.photos = photos;
-                this.props.flickrPhotosState.loadInProgress = false;
+                let photosResponse = await this.props.flickrPhotosStore.fetch(this.props.flickrPhotosState.searchText);
+                this.props.flickrPhotosState.update(photosResponse);
             } catch (e) {
                 this.props.flickrPhotosState.loadInProgress = false;
                 if (e instanceof SearchTermTooShortError) {
@@ -62,13 +67,28 @@ export class HomePage extends React.Component<IHomePageProps> {
                     throw e;
                 }
             }
+            this.props.flickrPhotosState.loadInProgress = false;
         }, 500);
     }
 
-    private onScroll = () => {
+    private onScroll = async () => {
         if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-            // you're at the bottom of the page
-            console.log("Bottom of page");
+            if (this.props.flickrPhotosState.pagesLoaded < this.props.flickrPhotosState.totalPages && !this.props.flickrPhotosState.loadInProgress) {
+                let nextPage = this.props.flickrPhotosState.pagesLoaded + 1;
+                this.props.flickrPhotosState.loadInProgress = true;
+                try {
+                    let photosResponse = await this.props.flickrPhotosStore.fetch(this.props.flickrPhotosState.searchText, nextPage);
+                    this.props.flickrPhotosState.update(photosResponse, true);
+                } catch (e) {
+                    this.props.flickrPhotosState.loadInProgress = false;
+                    if (e instanceof SearchTermTooShortError) {
+                        this.props.flickrPhotosState.errorMessage = "Search term is too short too give relevant results."
+                    } else {
+                        throw e;
+                    }
+                }
+                this.props.flickrPhotosState.loadInProgress = false;
+            }
         }
     }
 }

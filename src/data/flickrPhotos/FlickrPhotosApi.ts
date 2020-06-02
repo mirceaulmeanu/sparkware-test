@@ -18,8 +18,11 @@ export class FlickrPhotosApi {
         private httpApi: HttpApi
     ) {}
 
-    async fetch(searchTerm: string) {
-        let serverResponse = await this.httpApi.fetch<IFlickrServerResponse>(this.flickrPhotosUrl.replace("%s", searchTerm));
+    async fetch(searchTerm: string, page?: number) {
+        if (!page) {
+            page = 1;
+        }
+        let serverResponse = await this.httpApi.fetch<IFlickrServerResponse>(this.flickrPhotosUrl.replace("%s", searchTerm).replace("%d", page.toString()));
         return serverResponse.photos;
     }
 }

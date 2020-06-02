@@ -1,7 +1,7 @@
 import { IFlickrResponse } from "./IFlickrResponse";
 import { IFlickrPhoto } from "./IFlickrPhoto";
 
-export class FlickrResponseReader {
+export class FlickrPhotosResponseReader {
     read(rawData: any) {
         /**
          * This reader doesn't do much but if any of the data from the server should be rearranged or validated in some way, this is the place.

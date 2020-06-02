@@ -1,9 +1,9 @@
 import { FlickrPhotosApi } from "./FlickrPhotosApi";
-import { FlickrResponseReader } from "./FlickrResponseReader";
+import { FlickrPhotosResponseReader } from "./FlickrPhotosResponseReader";
 import { SearchTermTooShortError } from "./errors/SearchTermTooShortError";
 
 export class FlickrPhotosStore {
-    constructor(private flickrPhotosApi: FlickrPhotosApi, private flickrResponseReader: FlickrResponseReader) {}
+    constructor(private flickrPhotosApi: FlickrPhotosApi, private flickrResponseReader: FlickrPhotosResponseReader) {}
     async fetch(searchTerm: string, page?: number) {
         if (searchTerm.length < 3) {
             throw new SearchTermTooShortError();
